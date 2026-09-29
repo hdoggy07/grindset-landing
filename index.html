@@ -1,0 +1,597 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Grindset — Smart lifting, real progress</title>
+<meta name="description" content="Grindset is a weight-training tracker that tells you exactly what to lift next, plus a Coach that actually watches your training. Join the waitlist." />
+<style>
+  :root {
+    --bg: #14171d;
+    --surface: #1c212a;
+    --card: #1c212a;
+    --border: #2b323d;
+    --text: #f3f5f7;
+    --text-muted: #9aa1ad;
+    --text-faint: #6b7280;
+    --accent: #c9f24c;
+    --accent-soft: #20261a;
+    --on-accent: #14141c;
+    --warn: #ff6b52;
+    --warn-soft: #2e211d;
+    --pb: #ffc94d;
+    --pb-soft: #2e2712;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    line-height: 1.6;
+    overflow-x: hidden;
+  }
+  a { color: inherit; }
+  .wrap { max-width: 1100px; margin: 0 auto; padding: 0 20px; }
+
+  /* ── nav ── */
+  nav.top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 0;
+  }
+  .brand { display: flex; align-items: center; gap: 10px; }
+  .brand-mark {
+    width: 34px; height: 34px; border-radius: 9px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; color: var(--on-accent); font-size: 17px; flex-shrink: 0;
+  }
+  .brand-name { font-weight: 800; font-size: 19px; letter-spacing: 0.2px; }
+  .nav-cta {
+    display: inline-block;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-weight: 700;
+    font-size: 14px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 10px 18px;
+    border-radius: 999px;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+
+  /* ── hero ── */
+  .hero {
+    display: grid;
+    grid-template-columns: 1.05fr 0.95fr;
+    gap: 40px;
+    align-items: center;
+    padding: 48px 0 90px;
+  }
+  .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    border: 1px solid rgba(201,242,76,0.35);
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    padding: 6px 12px;
+    border-radius: 999px;
+    margin-bottom: 20px;
+  }
+  .pill .dot {
+    width: 6px; height: 6px; border-radius: 50%; background: var(--accent);
+  }
+  h1 {
+    font-size: 44px;
+    line-height: 1.12;
+    font-weight: 800;
+    margin: 0 0 18px;
+    letter-spacing: -0.5px;
+  }
+  h1 span { color: var(--accent); }
+  .hero-sub {
+    color: var(--text-muted);
+    font-size: 17px;
+    max-width: 480px;
+    margin: 0 0 32px;
+  }
+
+  form.signup {
+    display: flex;
+    gap: 10px;
+    max-width: 460px;
+    flex-wrap: wrap;
+  }
+  .signup input[type=email] {
+    flex: 1 1 240px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-size: 15px;
+    padding: 14px 16px;
+    border-radius: 12px;
+    outline: none;
+  }
+  .signup input[type=email]::placeholder { color: var(--text-faint); }
+  .signup input[type=email]:focus { border-color: var(--accent); }
+  .signup button {
+    background: var(--accent);
+    color: var(--on-accent);
+    border: none;
+    font-weight: 700;
+    font-size: 15px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    padding: 14px 24px;
+    border-radius: 12px;
+    cursor: pointer;
+    flex: 0 0 auto;
+  }
+  .signup button:disabled { opacity: 0.6; cursor: default; }
+  .signup button:hover:not(:disabled) { filter: brightness(1.05); }
+
+  .form-note {
+    color: var(--text-faint);
+    font-size: 13px;
+    margin-top: 12px;
+  }
+  .form-status {
+    font-size: 14px;
+    font-weight: 600;
+    margin-top: 14px;
+    display: none;
+  }
+  .form-status.show { display: block; }
+  .form-status.ok { color: var(--accent); }
+  .form-status.info { color: var(--pb); }
+  .form-status.err { color: var(--warn); }
+
+  /* ── phone mockups ── */
+  .phones {
+    position: relative;
+    height: 560px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .phone {
+    position: absolute;
+    width: 240px;
+    height: 500px;
+    background: #0b0d11;
+    border-radius: 36px;
+    padding: 10px;
+    box-shadow: 0 30px 60px -15px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04);
+  }
+  .phone.back {
+    right: 40px;
+    top: 10px;
+    transform: rotate(6deg);
+    opacity: 0.92;
+  }
+  .phone.front {
+    left: 20px;
+    bottom: 0;
+    transform: rotate(-5deg);
+    z-index: 2;
+  }
+  .phone .notch {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90px;
+    height: 18px;
+    background: #0b0d11;
+    border-radius: 0 0 14px 14px;
+    z-index: 3;
+  }
+  .screen {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: var(--bg);
+    border-radius: 26px;
+    overflow: hidden;
+    padding: 30px 14px 14px;
+    font-size: 11px;
+  }
+  .screen .status-time {
+    position: absolute;
+    top: 12px;
+    left: 18px;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--text);
+  }
+  .screen-label {
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    color: var(--text-faint);
+    margin-bottom: 3px;
+  }
+  .screen-title {
+    font-size: 15px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+    margin-bottom: 14px;
+  }
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 12px;
+    margin-bottom: 10px;
+  }
+  .set-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 6px;
+    margin-bottom: 8px;
+  }
+  .set-badge {
+    width: 22px; height: 22px; border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--accent);
+    font-size: 10px; font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .set-field {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 6px 8px;
+    font-size: 11px;
+    font-weight: 700;
+    flex: 1;
+    text-align: center;
+  }
+  .set-check {
+    width: 24px; height: 24px; border-radius: 7px;
+    background: var(--accent);
+    color: var(--on-accent);
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 800; font-size: 12px; flex-shrink: 0;
+  }
+  .pb-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    background: var(--pb-soft);
+    color: var(--pb);
+    font-size: 9px;
+    font-weight: 800;
+    padding: 2px 6px;
+    border-radius: 6px;
+    margin-left: 6px;
+  }
+  .bar-track {
+    height: 7px;
+    border-radius: 999px;
+    background: var(--border);
+    overflow: hidden;
+    margin-top: 10px;
+  }
+  .bar-fill {
+    height: 100%;
+    border-radius: 999px;
+    background: var(--accent);
+  }
+  .bar-label {
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--accent);
+    margin-top: 6px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text-muted);
+    font-size: 9px;
+    font-weight: 700;
+    padding: 4px 8px;
+    border-radius: 999px;
+    margin-top: 10px;
+  }
+  .insight-label {
+    display: inline-block;
+    font-size: 8px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-faint);
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 2px 7px;
+    border-radius: 6px;
+    margin-bottom: 8px;
+  }
+  .insight-headline {
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--text);
+    margin-bottom: 6px;
+    line-height: 1.35;
+  }
+  .insight-detail {
+    font-size: 10px;
+    color: var(--text-muted);
+    line-height: 1.5;
+  }
+  .fixed-card .insight-headline { color: var(--accent); }
+  .fixed-card { opacity: 0.85; }
+
+  /* ── feature grid ── */
+  .features {
+    padding: 30px 0 90px;
+    border-top: 1px solid var(--border);
+  }
+  .features h2 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-faint);
+    font-weight: 700;
+    margin: 40px 0 28px;
+  }
+  .feature-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  .feature-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 24px;
+  }
+  .feature-card .icon {
+    width: 38px; height: 38px;
+    border-radius: 10px;
+    background: var(--accent-soft);
+    color: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 18px;
+    margin-bottom: 16px;
+  }
+  .feature-card h3 {
+    font-size: 16px;
+    margin: 0 0 8px;
+  }
+  .feature-card p {
+    color: var(--text-muted);
+    font-size: 14px;
+    margin: 0;
+  }
+
+  /* ── footer ── */
+  footer {
+    border-top: 1px solid var(--border);
+    padding: 28px 0 60px;
+    color: var(--text-faint);
+    font-size: 13px;
+    display: flex;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+  footer a { color: var(--text-muted); text-decoration: none; }
+  footer a:hover { color: var(--accent); }
+
+  @media (max-width: 860px) {
+    .hero { grid-template-columns: 1fr; padding-bottom: 40px; }
+    h1 { font-size: 34px; }
+    .phones { height: 420px; margin-top: 10px; }
+    .phone { width: 190px; height: 400px; }
+    .phone.back { right: 10px; top: 0; }
+    .phone.front { left: 0; bottom: 0; }
+    .feature-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <nav class="top">
+      <div class="brand">
+        <div class="brand-mark">G</div>
+        <div class="brand-name">Grindset</div>
+      </div>
+      <a class="nav-cta" href="#join">Join waitlist</a>
+    </nav>
+
+    <div class="hero">
+      <div>
+        <div class="pill"><span class="dot"></span> Coming soon</div>
+        <h1>Stop guessing<br/>what to lift <span>next</span>.</h1>
+        <p class="hero-sub">
+          Grindset logs your sets and tells you exactly when to add weight —
+          plus a Coach that actually watches your training over time, not
+          just records it.
+        </p>
+
+        <form class="signup" id="waitlist-form">
+          <input type="email" id="waitlist-email" placeholder="you@email.com" required autocomplete="email" />
+          <button type="submit" id="waitlist-submit">Join waitlist</button>
+        </form>
+        <div class="form-note">First 100 signups get a free month of Coach premium at launch. No spam, ever.</div>
+        <div class="form-status" id="waitlist-status"></div>
+      </div>
+
+      <div class="phones">
+        <div class="phone back">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="status-time">9:41</div>
+            <div class="screen-label">Coach</div>
+            <div class="screen-title">This week</div>
+
+            <div class="card">
+              <div class="insight-label">Training</div>
+              <div class="insight-headline">Stuck at the same weight: Bench Press (Barbell)</div>
+              <div class="insight-detail">Same working weight for 4+ sessions straight — try a rep-range change or an extra back-off set to break through.</div>
+            </div>
+
+            <div class="card fixed-card">
+              <div class="insight-label">Nutrition</div>
+              <div class="insight-headline">Fixed: Your protein target</div>
+              <div class="insight-detail">This was flagged last week and isn't anymore — nice work closing that out.</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="phone front">
+          <div class="notch"></div>
+          <div class="screen">
+            <div class="status-time">9:41</div>
+            <div class="screen-label">Logging</div>
+            <div class="screen-title">Bench Press (Barbell)</div>
+
+            <div class="card">
+              <div class="set-row">
+                <div class="set-badge">1</div>
+                <div class="set-field">62.5 kg</div>
+                <div class="set-field">10</div>
+                <div class="set-check">✓</div>
+                <span class="pb-tag">★ PB</span>
+              </div>
+              <div class="set-row">
+                <div class="set-badge">2</div>
+                <div class="set-field">62.5 kg</div>
+                <div class="set-field">8</div>
+                <div class="set-check">✓</div>
+              </div>
+              <div class="set-row">
+                <div class="set-badge">3</div>
+                <div class="set-field">62.5</div>
+                <div class="set-field">—</div>
+                <div class="set-check" style="background:var(--border); color:var(--text-faint);">…</div>
+              </div>
+              <div class="bar-track"><div class="bar-fill" style="width:90%"></div></div>
+              <div class="bar-label">9/10 reps — hit 10 to move up in weight</div>
+              <div class="chip">⏱ Rest 01:24</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="features" id="join">
+      <h2>Why grindset</h2>
+      <div class="feature-grid">
+        <div class="feature-card">
+          <div class="icon">↗</div>
+          <h3>Smart suggestions, every set</h3>
+          <p>Hit the top of your rep range and Grindset suggests more weight next time — double progression made visible, right on the logging screen.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">⚙</div>
+          <h3>Built for real training</h3>
+          <p>A plate calculator for real kg and lb plate sizes, auto-generated warm-ups, supersets, RIR tracking, and a rest timer that starts itself.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🧠</div>
+          <h3>A Coach that actually coaches</h3>
+          <p>Plateau detection, weekly recaps, and training-load warnings — it remembers what it told you last week, so nothing slips through.</p>
+        </div>
+        <div class="feature-card">
+          <div class="icon">🤝</div>
+          <h3>Train with friends, on your terms</h3>
+          <p>Share a finished workout if you want to — entirely optional. Your body weight, nutrition, and goals are never shared, ever.</p>
+        </div>
+      </div>
+
+      <form class="signup" id="waitlist-form-2" style="margin-top:10px;">
+        <input type="email" id="waitlist-email-2" placeholder="you@email.com" required autocomplete="email" />
+        <button type="submit" id="waitlist-submit-2">Join waitlist</button>
+      </form>
+      <div class="form-status" id="waitlist-status-2"></div>
+    </div>
+
+    <footer>
+      <div>© 2026 Grindset</div>
+      <div>
+        <a href="https://privacy.grindset.online">Privacy Policy</a>
+        &nbsp;·&nbsp;
+        <a href="mailto:grindsetservices@gmail.com">grindsetservices@gmail.com</a>
+      </div>
+    </footer>
+  </div>
+
+<script>
+  const SUPABASE_URL = "https://qayzaxwbzqpphmkemtna.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_N_hkw_y7r6CMF5cndJu4fA_CWL9MSFb";
+
+  async function joinWaitlist(email, statusEl, buttonEl) {
+    statusEl.classList.remove("show", "ok", "info", "err");
+    buttonEl.disabled = true;
+    const originalText = buttonEl.textContent;
+    buttonEl.textContent = "Joining…";
+    try {
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/waitlist_signups`, {
+        method: "POST",
+        headers: {
+          apikey: SUPABASE_KEY,
+          Authorization: `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          Prefer: "return=minimal",
+        },
+        body: JSON.stringify({ email }),
+      });
+      if (res.ok) {
+        statusEl.textContent = "You're on the list. We'll email you when Grindset is ready.";
+        statusEl.classList.add("show", "ok");
+        buttonEl.textContent = "You're in ✓";
+        return true;
+      }
+      if (res.status === 409) {
+        statusEl.textContent = "That email's already on the waitlist.";
+        statusEl.classList.add("show", "info");
+        buttonEl.textContent = originalText;
+        buttonEl.disabled = false;
+        return false;
+      }
+      throw new Error("request failed: " + res.status);
+    } catch (err) {
+      statusEl.textContent = "Something went wrong — please try again in a moment.";
+      statusEl.classList.add("show", "err");
+      buttonEl.textContent = originalText;
+      buttonEl.disabled = false;
+      return false;
+    }
+  }
+
+  function wireForm(formId, emailId, buttonId, statusId) {
+    const form = document.getElementById(formId);
+    const emailInput = document.getElementById(emailId);
+    const button = document.getElementById(buttonId);
+    const status = document.getElementById(statusId);
+    form.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = emailInput.value.trim();
+      if (!email) return;
+      await joinWaitlist(email, status, button);
+    });
+  }
+
+  wireForm("waitlist-form", "waitlist-email", "waitlist-submit", "waitlist-status");
+  wireForm("waitlist-form-2", "waitlist-email-2", "waitlist-submit-2", "waitlist-status-2");
+</script>
+</body>
+</html>
